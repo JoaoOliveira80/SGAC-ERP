@@ -1,0 +1,15 @@
+# Segredos / configuracoes locais
+.env
+.env.*
+!.env.example
+# Maven / Java
+target/
+*.class
+# Front-end futuro
+node_modules/
+dist/
+# Editor e SO
+.idea/
+.vscode/
+.DS_Store
+*.log
