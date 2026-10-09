@@ -1,0 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap');
+@import 'tailwindcss';
+@theme { --font-sans: 'DM Sans', system-ui, sans-serif; }
+:root { font-family: 'DM Sans', sans-serif; color: #203a51; background: #f5f8fb; font-synthesis: none; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
+h1,h2,h3,.brand { font-family: 'Manrope', 'DM Sans', sans-serif; }
+button,select,input,textarea { font: inherit; }
+body { min-width: 320px; margin: 0; }
+::selection { background: #d3eaf8; color: #14364d; }
+::-webkit-scrollbar { height: 7px; width: 7px; }
+::-webkit-scrollbar-thumb { background: #cadae6; border-radius: 20px; }
+.table-wrap { overflow-x: auto; width: 100%; }
+.sgac-table { border-collapse: collapse; width: 100%; text-align: left; font-size: 13px; }
+.sgac-table thead { background: #f8fafc; }
+.sgac-table th { font-size: 10px; letter-spacing: .10em; text-transform: uppercase; color: #8194a4; font-weight: 800; white-space: nowrap; padding: 14px 19px; }
+.sgac-table td { padding: 17px 19px; border-top: 1px solid #eff3f6; vertical-align: middle; }
+.sgac-table tr:hover td { background: #fbfdff; }
+.sgac-table tr { transition: background .15s; }
+.form-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; }
+@media(max-width:650px) { .form-grid { grid-template-columns: 1fr; } }

@@ -1,0 +1,9 @@
+export type Status = 'RASCUNHO' | 'PENDENTE' | 'APROVADA' | 'REJEITADA'
+export type Departamento = { id: number; codigo: string; nome: string; ativo: boolean }
+export type Fornecedor = { id: number; cnpj: string; razaoSocial: string; email: string | null; ativo: boolean }
+export type CentroCusto = { id: number; codigo: string; nome: string; departamentoId: number; departamentoNome: string; ativo: boolean }
+export type SolicitacaoResumo = { id: number; status: Status; solicitante: string; centroCustoId: number; centroCusto: string; fornecedorId: number; fornecedor: string; valorTotal: number; criadaEm: string }
+export type Item = { id: number; descricao: string; quantidade: number; valorUnitario: number; subtotal: number }
+export type Solicitacao = SolicitacaoResumo & { justificativa: string; itens: Item[] }
+export type Historico = { id: number; statusAnterior: Status | null; statusNovo: Status; responsavel: string; observacao: string | null; registradoEm: string }
+export type NovaSolicitacao = { centroCustoId: number; fornecedorId: number; solicitante: string; justificativa: string; itens: { descricao: string; quantidade: number; valorUnitario: number }[] }
