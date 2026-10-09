@@ -43,6 +43,6 @@ Execute `cd backend && ./mvnw test`. A ausência de banco nos testes unitários 
 
 A API retorna `ProblemDetail` (formato JSON com `status`, `detail`, `path`, `timestamp`) para erros de requisição e conflito. Na validação dos DTOs, a propriedade `campos` indica quais campos falharam. Erros de banco internos não são incluídos na resposta ao cliente.
 
-## Critério de pronto para portfólio
+## Critério de conclusão do protótipo
 
 Projeto com build funcionando em ambiente local, fluxo principal testado manualmente, documentação coerente com o código, ausência de segredos compartilhados e limitações honestamente informadas. **Isso não equivale a pronto para produção.**

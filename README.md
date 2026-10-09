@@ -2,7 +2,7 @@
 
 **Protótipo funcional de ERP para gestão de aquisições**, com cadastro de fornecedores e centros de custo, solicitações com múltiplos itens, tramitação de aprovações, histórico e indicadores operacionais.
 
-Projeto independente de portfólio, construído para exercitar **análise de requisitos, modelagem relacional, regras de negócio, desenvolvimento full stack e documentação técnica**. O cenário é simulado: o SGAC **não foi implantado em uma organização**, não é produto pronto para produção e **não integra o TOTVS RM**.
+Projeto independente de engenharia de software, desenvolvido para explorar **análise de requisitos, modelagem relacional, regras de negócio, desenvolvimento full stack e documentação técnica**. O cenário é simulado: o SGAC **não foi implantado em uma organização** e não é um produto pronto para produção.
 
 ![Dashboard do SGAC com solicitações e indicadores de um ambiente demonstrativo](docs/screenshots/dashboard.webp)
 
@@ -142,15 +142,12 @@ Consulte [Estudo de caso](docs/07-estudo-de-caso.md) para entender o problema si
 - [03 — Modelo relacional](docs/03-modelo-de-dados.md)
 - [04 — Arquitetura e fluxos](docs/04-arquitetura-e-fluxos.md)
 - [05 — Testes, qualidade e limitações](docs/05-testes-e-limitacoes.md)
-- [06 — Roteiro de apresentação](docs/06-apresentacao-portifolio.md)
 - [07 — Estudo de caso](docs/07-estudo-de-caso.md)
-- [08 — Publicação segura no GitHub](docs/08-publicacao-github.md)
-- [09 — Texto pronto para portfólio](docs/09-texto-portfolio.md)
 
 ## Limitações conhecidas e próximos passos
 
 O SGAC é **projeto demonstrativo de estudo independente**, não deve ser disponibilizado como API pública sem novos controles. Para evolução real são necessários: autenticação e autorização com identidades verificadas, usuário SQL de privilégio mínimo (em vez de `sa`), validações adicionais (incluindo CNPJ completo), testes de integração, auditoria de operações administrativas, tratamento de segredos e proteção das conexões em produção.
 
-**Fora de escopo:** estoque, faturamento, pagamentos, licitações, implantação corporativa e integração com TOTVS RM. Nenhum dado das imagens comprova uso profissional por terceiros.
+**Fora de escopo:** estoque, faturamento, pagamentos, licitações, implantação corporativa e integração com outros sistemas ERP. As imagens mostram exclusivamente dados fictícios do ambiente de demonstração.
 
-> Código e documentação para fins de estudo e portfólio. Consulte a política de licenciamento antes de reutilizar partes do projeto; este repositório não inclui licença aberta expressa.
+> Projeto demonstrativo de código e documentação. Este repositório não inclui licença aberta expressa; consulte as condições de uso antes de reutilizar seu conteúdo.

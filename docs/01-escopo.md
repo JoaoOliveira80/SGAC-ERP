@@ -30,9 +30,9 @@ Centralizar os cadastros de apoio e a tramitação básica de solicitações de 
 
 - Estoque, recebimento, faturamento, pagamento e contabilidade;
 - Compras públicas, licitação e normas financeiras específicas;
-- Integração real com TOTVS RM ou qualquer outro ERP;
+- Integração com sistemas ERP externos;
 - Gestão de usuários, login e controle real de perfis;
 - Aprovação automática por alçadas de valor, saldo orçamentário e assinatura eletrônica;
 - Operação de produção, multiempresa e escalabilidade comprovada.
 
-**Natureza:** estudo independente com requisitos simulados. Não apresentar como trabalho desenvolvido ou implantado para o Instituto Santos Dumont ou outros órgãos.
+**Natureza:** estudo independente baseado em requisitos e perfis simulados. O SGAC não representa um sistema encomendado ou implantado em uma instituição real.

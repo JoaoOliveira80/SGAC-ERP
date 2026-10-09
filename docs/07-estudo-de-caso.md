@@ -1,6 +1,6 @@
 # Estudo de caso — SGAC ERP
 
-> **Natureza:** projeto independente, com problema e usuários simulados. Não houve contratação, implantação, entrevistas reais com stakeholders nem integração com sistemas do Instituto Santos Dumont.
+> **Natureza:** projeto independente, baseado em um cenário hipotético e perfis de usuário simulados. Não houve contratação, implantação em uma organização nem levantamento de necessidades junto a stakeholders reais.
 
 ## Contexto e desafio
 
@@ -67,11 +67,11 @@ O projeto demonstrou a diferença entre **fazer telas de CRUD** e **modelar um p
 
 ## Limitações e evolução planejada
 
-O protótipo não possui login, perfis autenticados ou verificação real da identidade do aprovador. O responsável é um texto informado pelo cliente, logo o histórico é **funcional**, não auditoria segura de identidade. Também não oferece alçadas de aprovação, orçamento, reconciliação de estoque ou integração com TOTVS RM.
+O protótipo não possui login, perfis autenticados ou verificação real da identidade do aprovador. O responsável é um texto informado pelo cliente, logo o histórico é **funcional**, não auditoria segura de identidade. Também não oferece alçadas de aprovação, orçamento, reconciliação de estoque ou integração com sistemas ERP externos.
 
-Próximos passos possíveis, **não entregues nesta versão**: autenticação/autorização, ampliação dos testes de integração, observabilidade, validação completa de CNPJ, paginação para bases grandes, identidade auditável nas decisões e melhorias de acessibilidade. O **modo escuro** é um refinamento de interface opcional, de prioridade menor que as medidas de segurança e portfólio.
+Próximos passos possíveis, **não entregues nesta versão**: autenticação/autorização, ampliação dos testes de integração, observabilidade, validação completa de CNPJ, paginação para bases grandes, identidade auditável nas decisões e melhorias de acessibilidade. O **modo escuro** pode ser considerado como refinamento visual futuro, sem prioridade definida.
 
-## O que este projeto evidencia para Analista de Sistemas
+## Competências técnicas exercitadas
 
 - **Análise de requisitos:** organização de problema, perfis simulados, RF/RNF e regras de negócio;
 - **Banco relacional:** modelagem SQL Server, relacionamentos e migrações;
@@ -79,4 +79,4 @@ Próximos passos possíveis, **não entregues nesta versão**: autenticação/au
 - **Desenvolvimento e documentação:** frontend, API REST e artefatos técnicos;
 - **Qualidade:** testes unitários e validação manual de cenários reais dentro do protótipo.
 
-> Este estudo **não equivale a experiência profissional com ERP ou TOTVS RM**. É uma demonstração independente de competências transferíveis.
+> O projeto demonstra conceitos de processos empresariais e engenharia de software, mas não constitui comprovação de implantação em produção ou experiência profissional com sistemas ERP de terceiros.
