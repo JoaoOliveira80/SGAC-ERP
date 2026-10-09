@@ -1,68 +1,91 @@
 # SGAC — Sistema Integrado de Gestão de Aquisições e Suprimentos
 
-**Protótipo funcional de ERP**, desenvolvido como projeto de portfólio para demonstrar análise de requisitos, modelagem relacional, regras de negócio, desenvolvimento Full Stack e documentação técnica/funcional.
+**Protótipo funcional de ERP para gestão de aquisições**, com cadastro de fornecedores e centros de custo, solicitações com múltiplos itens, tramitação de aprovações, histórico e indicadores operacionais.
 
-> **Escopo:** demonstração local. Não é um produto pronto para produção, não implementa autenticação/autorização e **não possui integração oficial com TOTVS RM**.
+Projeto independente de portfólio, construído para exercitar **análise de requisitos, modelagem relacional, regras de negócio, desenvolvimento full stack e documentação técnica**. O cenário é simulado: o SGAC **não foi implantado em uma organização**, não é produto pronto para produção e **não integra o TOTVS RM**.
 
-## Funcionalidades implementadas
+![Dashboard do SGAC com solicitações e indicadores de um ambiente demonstrativo](docs/screenshots/dashboard.webp)
 
-| Módulo | Funcionalidades |
+<p align="center"><em>Painel do ambiente local com dados fictícios usados na demonstração.</em></p>
+
+## Visão geral
+
+- **Dados mestres:** departamentos, fornecedores e centros de custo; edição e desativação lógica para preservar referências históricas.
+- **Solicitações de aquisição:** múltiplos itens, quantidades, preços e valor total calculado no backend.
+- **Fluxo de aprovação:** `RASCUNHO → PENDENTE → APROVADA / REJEITADA`, com validações de transição.
+- **Histórico funcional:** registro de criação, envio e decisão (sem identidade autenticada do aprovador).
+- **Acompanhamento:** dashboard, listagens, busca, filtros e indicadores oriundos da API e do SQL Server.
+- **API documentada:** contratos REST disponíveis via Swagger UI.
+
+### Telas
+
+| Solicitações de aquisição | Central de aprovações |
 | --- | --- |
-| Dashboard | Indicadores de solicitações, aprovações e valores aprovados, obtidos pela API |
-| Departamentos | Cadastrar, listar, consultar, editar e ativar/desativar |
-| Fornecedores | Cadastrar, listar, consultar, editar e ativar/desativar; verificação de formato do CNPJ |
-| Centros de custo | CRUD com desativação lógica, vinculados a departamento ativo |
-| Solicitações | Criar com vários itens, calcular subtotal/total, consultar e listar |
-| Aprovações | Enviar rascunho, aprovar ou rejeitar solicitação pendente |
-| Histórico | Registrar criação, envio e decisão com data, responsável informado e observação |
-| API | Endpoints REST documentados via Swagger UI |
+| ![Lista de solicitações e respectivos status](docs/screenshots/solicitacoes.webp) | ![Central de aprovações sem solicitações pendentes](docs/screenshots/aprovacoes.webp) |
 
-### Arquitetura
+| Centros de custo | Dashboard |
+| --- | --- |
+| ![Cadastro de centros de custo vinculados a departamentos](docs/screenshots/centros-de-custo.webp) | ![Indicadores de pedidos do SGAC](docs/screenshots/dashboard.webp) |
 
-- **Frontend:** React 19, TypeScript, Vite 7, Tailwind CSS 4, TanStack Query e React Router.
-- **Backend:** Java 21, Spring Boot 4.1.1, Spring Web MVC, Spring Data JPA, Hibernate, Bean Validation.
-- **Banco:** Microsoft SQL Server 2022 Developer em Docker Compose.
-- **Versionamento do banco:** Flyway (`V1`, `V2`, `V3`).
-- **Testes:** JUnit 5, Mockito e Bean Validation. As verificações automatizadas existentes não substituem testes de integração com SQL Server.
+> As capturas mostram um conjunto específico de dados de teste, e não resultados de uma instituição real. Os recursos visualizados são os disponíveis no protótipo local.
 
-Os componentes de interface foram elaborados especialmente para o projeto; o uso das tecnologias acima não implica que haja integração com produtos corporativos proprietários.
+## Tecnologias
 
-## Pré-requisitos
+| Camada | Stack |
+| --- | --- |
+| Interface | React 19, TypeScript, Vite 7, Tailwind CSS 4, TanStack Query, React Router 7 |
+| API | Java 21, Spring Boot 4.1.1, Spring Web MVC, Spring Data JPA, Bean Validation |
+| Banco de dados | Microsoft SQL Server 2022 Developer, Docker Compose |
+| Schema | Flyway, migrações V1–V3, chaves estrangeiras e constraints |
+| Testes | JUnit, Mockito e Bean Validation |
+| Documentação | Swagger/OpenAPI, requisitos funcionais, modelo ER e diagramas Mermaid |
 
-Java 21+, Node.js 22+, Docker Desktop com Docker Compose e Git. Os comandos a seguir foram planejados para Git Bash no Windows.
+A interface utiliza componentes próprios. **Não há autenticação real, autorização por perfil, integração externa com ERP, nem validação completa dos dígitos verificadores de CNPJ.**
 
-## Execução local
+## Arquitetura
 
-**1. Configurar credenciais**
+```mermaid
+flowchart LR
+    U[Usuário no navegador] --> FE[React + TypeScript]
+    FE -->|REST JSON via /api| API[Spring Boot]
+    API --> S[Services / regras de negócio]
+    S --> JPA[Spring Data JPA]
+    JPA --> DB[(SQL Server)]
+    F[Flyway V1–V3] --> DB
+```
 
-Na raiz do projeto, copie `.env.example` para `.env` e configure uma senha forte em `MSSQL_SA_PASSWORD`. Se você já possui um volume persistido do SQL Server, mantenha a senha que foi definida quando esse volume foi criado.
+As mudanças de estado e o cálculo de valores são realizados no backend; os dados são persistidos no SQL Server. O banco é inicializado e evoluído por migrações versionadas. Para detalhes, consulte [Arquitetura e fluxos](docs/04-arquitetura-e-fluxos.md) e [Modelo de dados](docs/03-modelo-de-dados.md).
 
-**Nunca faça commit do `.env` ou compartilhe esse arquivo.** A aplicação utiliza `sa` somente no ambiente demonstrativo local.
+## Como executar localmente
 
-**2. Iniciar SQL Server**
+**Pré-requisitos:** Java 21 ou superior, Node.js 22 ou superior, Docker Desktop com Compose e Git. Comandos demonstrados no **Git Bash (Windows)**.
+
+### 1. Banco de dados
+
+Na raiz do repositório, copie `.env.example` para `.env` e configure uma senha forte para `MSSQL_SA_PASSWORD`. **Não versione `.env`.** Se já tem um volume SQL Server, reutilize a senha original, pois mudar o `.env` não altera a senha dentro do banco existente.
 
 ```bash
 docker compose up -d
 docker compose ps
 ```
 
-O SQL Server fica disponível exclusivamente em `127.0.0.1:14333` no computador host.
-
-**3. Criar o banco uma única vez**
-
-Confira os bancos existentes:
+Verifique se o banco `SGAC_DB` existe:
 
 ```bash
 docker compose exec -T sqlserver bash -c '/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -C -Q "SELECT name FROM sys.databases"'
 ```
 
-Se `SGAC_DB` ainda **não existir**, crie-o:
+Se `SGAC_DB` **não** constar na lista, execute **uma vez**:
 
 ```bash
 docker compose exec -T sqlserver bash -c '/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -C -b -Q "CREATE DATABASE SGAC_DB"'
 ```
 
-**4. Iniciar backend**
+O SQL Server é exposto somente ao próprio computador, em `127.0.0.1:14333`.
+
+### 2. Backend
+
+Em um terminal:
 
 ```bash
 cd backend
@@ -72,9 +95,12 @@ set +a
 ./mvnw spring-boot:run
 ```
 
-A API estará em `http://localhost:8080` e o Swagger em `http://localhost:8080/swagger-ui/index.html`.
+- Health check: `http://localhost:8080/api/health`
+- Swagger UI: `http://localhost:8080/swagger-ui/index.html`
 
-**5. Iniciar frontend** (em outro terminal):
+### 3. Frontend
+
+Em outro terminal:
 
 ```bash
 cd frontend
@@ -82,53 +108,49 @@ npm ci
 npm run dev
 ```
 
-A interface estará em `http://localhost:5173`. O Vite encaminha `/api` para a API local. Para um build de produção do frontend, use `npm run build`; os arquivos ficam em `frontend/dist/`.
+Interface em `http://localhost:5173`. O Vite utiliza proxy para o backend local, portanto ambos precisam estar ativos para os dados aparecerem.
 
-## Testes e qualidade
-
-No backend (com o `.env` carregado se necessário):
+## Testes e validação
 
 ```bash
-cd backend
+# Dentro de backend (com o ambiente configurado)
 ./mvnw test
-```
 
-No frontend:
-
-```bash
-cd frontend
-npm ci
+# Dentro de frontend
 npm run build
 ```
 
-Os testes de backend atuais são principalmente **unitários**, sem necessidade de banco. Consulte [a matriz de testes](docs/05-testes-e-limitacoes.md) para o que está coberto e o que continua manual.
+**Última verificação manual informada (09/10/2026):** 13 testes Java passando (0 falhas/0 erros) e build TypeScript + Vite concluído. Também foram testados os cadastros e o fluxo principal via interface. Esses resultados **não equivalem a testes de segurança, carga ou de integração automatizada com SQL Server**.
 
-## Demonstração sugerida
+O repositório contém workflow de CI para testes Java e build de frontend; seu resultado remoto deve ser acompanhado na aba **Actions** após a publicação.
 
-1. Crie um departamento (ex.: `TI`).
-2. Cadastre um fornecedor fictício e um centro de custo ligado ao departamento.
-3. Crie uma solicitação com mais de um item e confira o valor calculado pelo backend.
-4. Envie a solicitação para aprovação.
-5. Aprove ou rejeite com justificativa e confira o histórico.
-6. Confira os indicadores no dashboard.
+## Demonstração em seis passos
 
-Regra central: somente solicitações `PENDENTE` podem ser aprovadas ou rejeitadas. Cadastros inativos não podem ser usados na criação ou envio de novas solicitações. **O nome do responsável é digitado pelo operador e não constitui autenticação.**
+1. Criar um departamento, um fornecedor fictício e um centro de custo vinculado.
+2. Registrar uma solicitação com duas linhas de itens.
+3. Conferir subtotais e valor total calculados pelo backend.
+4. Enviar a solicitação de `RASCUNHO` para `PENDENTE`.
+5. Aprovar ou rejeitar e consultar seu histórico.
+6. Verificar os indicadores e a listagem no dashboard.
+
+Consulte [Estudo de caso](docs/07-estudo-de-caso.md) para entender o problema simulado, decisões técnicas, resultados e limitações.
 
 ## Documentação
 
-- [01 — Escopo e stakeholders](docs/01-escopo.md)
+- [01 — Contexto, escopo e stakeholders](docs/01-escopo.md)
 - [02 — Requisitos e regras de negócio](docs/02-requisitos-e-regras.md)
-- [03 — Modelo de dados](docs/03-modelo-de-dados.md)
+- [03 — Modelo relacional](docs/03-modelo-de-dados.md)
 - [04 — Arquitetura e fluxos](docs/04-arquitetura-e-fluxos.md)
-- [05 — Testes, segurança e limitações](docs/05-testes-e-limitacoes.md)
-- [06 — Apresentação técnica para portfólio](docs/06-apresentacao-portifolio.md)
+- [05 — Testes, qualidade e limitações](docs/05-testes-e-limitacoes.md)
+- [06 — Roteiro de apresentação](docs/06-apresentacao-portifolio.md)
+- [07 — Estudo de caso](docs/07-estudo-de-caso.md)
+- [08 — Publicação segura no GitHub](docs/08-publicacao-github.md)
+- [09 — Texto pronto para portfólio](docs/09-texto-portfolio.md)
 
-## Cuidados importantes
+## Limitações conhecidas e próximos passos
 
-- Não execute `docker compose down -v` em uma instância com dados que deseja preservar; esse comando **remove o volume**.
-- Não altere migrations V1–V3 que já tenham sido executadas. Use `V4__...sql` para futuras mudanças de banco.
-- O projeto não possui permissões de usuário, trilha de identidade verificada, controle de orçamento, pedidos de compra formais ou integração com sistemas externos.
-- Para produção seriam necessários autenticação, autorização por perfil, usuário de banco com privilégios mínimos, certificados TLS válidos, testes de integração, gestão de segredos, logging/auditoria de segurança, backup e recuperação, observabilidade e revisão de regras de negócio.
-- Não publique dados reais de clientes ou empregadores em exemplos, screenshots ou histórico de commits.
+O SGAC é **projeto demonstrativo de estudo independente**, não deve ser disponibilizado como API pública sem novos controles. Para evolução real são necessários: autenticação e autorização com identidades verificadas, usuário SQL de privilégio mínimo (em vez de `sa`), validações adicionais (incluindo CNPJ completo), testes de integração, auditoria de operações administrativas, tratamento de segredos e proteção das conexões em produção.
 
-Projeto demonstrativo para fins educacionais e de portfólio. Nenhuma licença de uso de terceiros é concedida implicitamente por este repositório.
+**Fora de escopo:** estoque, faturamento, pagamentos, licitações, implantação corporativa e integração com TOTVS RM. Nenhum dado das imagens comprova uso profissional por terceiros.
+
+> Código e documentação para fins de estudo e portfólio. Consulte a política de licenciamento antes de reutilizar partes do projeto; este repositório não inclui licença aberta expressa.
