@@ -1,101 +1,134 @@
 # SGAC — Sistema Integrado de Gestão de Aquisições e Suprimentos
 
-Projeto demonstrativo em **Java 21 + Spring Boot 4.1.1 + SQL Server 2022 + Flyway + Swagger UI**, reconstruído até a etapa de **cadastros administrativos**.
+**Protótipo funcional de ERP**, desenvolvido como projeto de portfólio para demonstrar análise de requisitos, modelagem relacional, regras de negócio, desenvolvimento Full Stack e documentação técnica/funcional.
 
-## Situação dos módulos
+> **Escopo:** demonstração local. Não é um produto pronto para produção, não implementa autenticação/autorização e **não possui integração oficial com TOTVS RM**.
 
-| Módulo | Estado |
+## Funcionalidades implementadas
+
+| Módulo | Funcionalidades |
 | --- | --- |
-| SQL Server no Docker | Compose configurado |
-| Spring Boot e `/api/health` | Implementado |
-| Departamentos (GET, GET/id, POST, PUT, PATCH/status) | Implementado |
-| Fornecedores (GET, GET/id, POST, PUT, PATCH/status) | Implementado |
-| Centros de custo (GET, GET/id, POST, PUT, PATCH/status) | Implementado |
-| Migrações V1 e V2 | Incluídas |
-| Solicitações, aprovações, frontend | **Ainda não implementados** |
+| Dashboard | Indicadores de solicitações, aprovações e valores aprovados, obtidos pela API |
+| Departamentos | Cadastrar, listar, consultar, editar e ativar/desativar |
+| Fornecedores | Cadastrar, listar, consultar, editar e ativar/desativar; verificação de formato do CNPJ |
+| Centros de custo | CRUD com desativação lógica, vinculados a departamento ativo |
+| Solicitações | Criar com vários itens, calcular subtotal/total, consultar e listar |
+| Aprovações | Enviar rascunho, aprovar ou rejeitar solicitação pendente |
+| Histórico | Registrar criação, envio e decisão com data, responsável informado e observação |
+| API | Endpoints REST documentados via Swagger UI |
 
-## Restaurar no Windows (Git Bash)
+### Arquitetura
 
-**IMPORTANTE:** Não execute `docker compose down -v`: isso apaga o volume persistente do banco.
+- **Frontend:** React 19, TypeScript, Vite 7, Tailwind CSS 4, TanStack Query e React Router.
+- **Backend:** Java 21, Spring Boot 4.1.1, Spring Web MVC, Spring Data JPA, Hibernate, Bean Validation.
+- **Banco:** Microsoft SQL Server 2022 Developer em Docker Compose.
+- **Versionamento do banco:** Flyway (`V1`, `V2`, `V3`).
+- **Testes:** JUnit 5, Mockito e Bean Validation. As verificações automatizadas existentes não substituem testes de integração com SQL Server.
 
-1. Extraia o ZIP. A raiz do projeto precisa conter `compose.yaml`, `.env.example` e `backend/`.
-2. Coloque na raiz um arquivo `.env` **com sua senha original**. Se o seu ZIP de resgate `SGAC-erp.zip` ainda estiver disponível, ele possui o `.env` anterior. Não publique esse arquivo.
-   - Em um projeto realmente novo, copie `.env.example` para `.env` e crie sua senha forte antes da primeira inicialização.
-   - Alterar `.env` **não redefine** a senha de um SQL Server já existente.
-3. Abra a raiz do projeto e execute:
+Os componentes de interface foram elaborados especialmente para o projeto; o uso das tecnologias acima não implica que haja integração com produtos corporativos proprietários.
+
+## Pré-requisitos
+
+Java 21+, Node.js 22+, Docker Desktop com Docker Compose e Git. Os comandos a seguir foram planejados para Git Bash no Windows.
+
+## Execução local
+
+**1. Configurar credenciais**
+
+Na raiz do projeto, copie `.env.example` para `.env` e configure uma senha forte em `MSSQL_SA_PASSWORD`. Se você já possui um volume persistido do SQL Server, mantenha a senha que foi definida quando esse volume foi criado.
+
+**Nunca faça commit do `.env` ou compartilhe esse arquivo.** A aplicação utiliza `sa` somente no ambiente demonstrativo local.
+
+**2. Iniciar SQL Server**
 
 ```bash
 docker compose up -d
-# Verificar quais bancos existem, sem apagar dados:
+docker compose ps
+```
+
+O SQL Server fica disponível exclusivamente em `127.0.0.1:14333` no computador host.
+
+**3. Criar o banco uma única vez**
+
+Confira os bancos existentes:
+
+```bash
 docker compose exec -T sqlserver bash -c '/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -C -Q "SELECT name FROM sys.databases"'
-# SOMENTE se SGAC_DB nao aparecer na lista, crie uma vez:
-docker compose exec -T sqlserver bash -c '/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -C -Q "CREATE DATABASE SGAC_DB"'
+```
+
+Se `SGAC_DB` ainda **não existir**, crie-o:
+
+```bash
+docker compose exec -T sqlserver bash -c '/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -C -b -Q "CREATE DATABASE SGAC_DB"'
+```
+
+**4. Iniciar backend**
+
+```bash
 cd backend
 set -a
 source ../.env
 set +a
-./mvnw clean test
 ./mvnw spring-boot:run
 ```
 
-4. Confirme: `http://localhost:8080/api/health` e `http://localhost:8080/swagger-ui/index.html`.
-5. Primeiro crie um departamento ativo, depois um centro de custo com `departamentoId` do departamento.
+A API estará em `http://localhost:8080` e o Swagger em `http://localhost:8080/swagger-ui/index.html`.
 
-### Exemplos de payloads
+**5. Iniciar frontend** (em outro terminal):
 
-`POST /api/departamentos`
-```json
-{"codigo":"TI","nome":"Tecnologia da Informacao"}
+```bash
+cd frontend
+npm ci
+npm run dev
 ```
 
-`POST /api/fornecedores`
-```json
-{"cnpj":"11222333000181","razaoSocial":"Fornecedor Demonstrativo","email":"contato@exemplo.com"}
+A interface estará em `http://localhost:5173`. O Vite encaminha `/api` para a API local. Para um build de produção do frontend, use `npm run build`; os arquivos ficam em `frontend/dist/`.
+
+## Testes e qualidade
+
+No backend (com o `.env` carregado se necessário):
+
+```bash
+cd backend
+./mvnw test
 ```
 
-`POST /api/centros-custo`
-```json
-{"codigo":"CC-TI","nome":"Tecnologia e Sistemas","departamentoId":1}
+No frontend:
+
+```bash
+cd frontend
+npm ci
+npm run build
 ```
 
-## Atenção sobre migrações Flyway
+Os testes de backend atuais são principalmente **unitários**, sem necessidade de banco. Consulte [a matriz de testes](docs/05-testes-e-limitacoes.md) para o que está coberto e o que continua manual.
 
-As migrações foram reconstituídas conforme o código discutido até esta etapa. Se o volume antigo ainda contiver migrações e ocorrer erro de `checksum mismatch`, **não apague o banco e não execute `flyway repair` automaticamente**. Compare o arquivo de migração original com o reconstruído e avalie a alteração antes de seguir.
+## Demonstração sugerida
 
-## Restrições de segurança e escopo
+1. Crie um departamento (ex.: `TI`).
+2. Cadastre um fornecedor fictício e um centro de custo ligado ao departamento.
+3. Crie uma solicitação com mais de um item e confira o valor calculado pelo backend.
+4. Envie a solicitação para aprovação.
+5. Aprove ou rejeite com justificativa e confira o histórico.
+6. Confira os indicadores no dashboard.
 
-- O arquivo `.env` não está neste ZIP para evitar expor credenciais.
-- SQL Server `sa` e `trustServerCertificate=true` são **apenas para desenvolvimento local**.
-- O backend ainda não tem autenticação/autorização; não exponha a API publicamente.
-- A verificação de CNPJ atual cobre somente formato, não dígitos verificadores.
-- Não existem integrações oficiais com TOTVS RM neste projeto.
+Regra central: somente solicitações `PENDENTE` podem ser aprovadas ou rejeitadas. Cadastros inativos não podem ser usados na criação ou envio de novas solicitações. **O nome do responsável é digitado pelo operador e não constitui autenticação.**
 
-## Estrutura
+## Documentação
 
-```text
-SGAC-erp/
-  compose.yaml
-  .env.example
-  .gitignore
-  README.md
-  backend/
-    pom.xml
-    mvnw
-    mvnw.cmd
-    .mvn/wrapper/
-    src/main/java/br/com/sgac/
-      BackendApplication.java
-      api/HealthController.java
-      departamentos/
-      fornecedores/
-      centroscusto/
-    src/main/resources/
-      application.yml
-      db/migration/V1__criar_tabela_departamentos.sql
-      db/migration/V2__fornecedores_centros_custo.sql
-  docs/
-    01-escopo.md
-    02-modelo-dados.md
-```
+- [01 — Escopo e stakeholders](docs/01-escopo.md)
+- [02 — Requisitos e regras de negócio](docs/02-requisitos-e-regras.md)
+- [03 — Modelo de dados](docs/03-modelo-de-dados.md)
+- [04 — Arquitetura e fluxos](docs/04-arquitetura-e-fluxos.md)
+- [05 — Testes, segurança e limitações](docs/05-testes-e-limitacoes.md)
+- [06 — Apresentação técnica para portfólio](docs/06-apresentacao-portifolio.md)
 
-Documentação técnica adicional em `docs/`.
+## Cuidados importantes
+
+- Não execute `docker compose down -v` em uma instância com dados que deseja preservar; esse comando **remove o volume**.
+- Não altere migrations V1–V3 que já tenham sido executadas. Use `V4__...sql` para futuras mudanças de banco.
+- O projeto não possui permissões de usuário, trilha de identidade verificada, controle de orçamento, pedidos de compra formais ou integração com sistemas externos.
+- Para produção seriam necessários autenticação, autorização por perfil, usuário de banco com privilégios mínimos, certificados TLS válidos, testes de integração, gestão de segredos, logging/auditoria de segurança, backup e recuperação, observabilidade e revisão de regras de negócio.
+- Não publique dados reais de clientes ou empregadores em exemplos, screenshots ou histórico de commits.
+
+Projeto demonstrativo para fins educacionais e de portfólio. Nenhuma licença de uso de terceiros é concedida implicitamente por este repositório.

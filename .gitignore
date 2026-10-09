@@ -13,3 +13,10 @@ dist/
 .vscode/
 .DS_Store
 *.log
+
+# Cache TypeScript
+*.tsbuildinfo
+
+# Arquivos de ambiente e dados locais
+*.bak
+*.bacpac
